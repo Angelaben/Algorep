@@ -1,0 +1,12 @@
+cmake_minimum_required (VERSION 2.6)
+project (Algorep)
+
+
+
+# add the binary tree to the search path for include files
+# so that we will find TutorialConfig.h
+include_directories("src")
+include_directories("src/project")
+
+# add the executable
+add_executable(Algorep src/project/firstExperiment.cpp)
