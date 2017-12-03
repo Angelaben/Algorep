@@ -11,6 +11,7 @@
 class MemoryProcess {
 public :
     MemoryProcess(){}
+    MemoryProcess(int own_id) { id = own_id;}
     /** Vide la memoire du processus **/
     void freeMemory() { myMemory.clear(); }
     /** Modifie la taille de la mémoire du processus en copiant la mémoire **/
@@ -26,16 +27,19 @@ public :
      *
      **/
     int getValue(int position)
-    {
+    {/*
         auto tuple =  myMemory.at(position);
         return std::get<0>(tuple);
+        */
     }
 
+    std::vector<std::tuple<int, int>> getVector() { return myMemory;}
+    int getId() { return id; }
     /** Libere une variable **/
 private:
     /** Vecteur de (IndexProcessus, Variable)  **/
-    std::vector<std::tuple<int, int> > myMemory = new std::vector<std::tuple<int, int>> ();
-
+    std::vector<std::tuple<int, int>> myMemory = std::vector<std::tuple<int, int>>();
+    int id = -1;
 };
 
 

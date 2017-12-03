@@ -4,3 +4,8 @@
 
 #include "MemoryProcess.h"
 
+int MemoryProcess::allocateMemory(int size, int identifiant, int value)
+{
+    //TODO
+    return 0;
+}

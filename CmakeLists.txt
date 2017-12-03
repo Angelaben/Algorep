@@ -1,12 +1,13 @@
 cmake_minimum_required (VERSION 2.6)
 project (Algorep)
-
+set (CMAKE_CXX_STANDARD 11)
 
 
 # add the binary tree to the search path for include files
 # so that we will find TutorialConfig.h
-include_directories("src")
 include_directories("src/project")
+include_directories("src/project/Processus")
 
 # add the executable
 add_executable(Algorep src/project/firstExperiment.cpp)
+add_executable(TestMemoryProcess Test/TestMemoryProcess.cpp src/project/Processus/MemoryProcess.cpp)
