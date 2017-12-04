@@ -63,3 +63,23 @@ bool MemoryProcess::modifyMemory(int position, int id, int new_value)
         current_position++;
     }
 }
+
+void MemoryProcess::freeMutlipleVariable(std::vector<int> vect_position, int identifiant)
+{
+    for (int position : vect_position)
+        freeVariable(position, identifiant);
+}
+
+std::vector<int> MemoryProcess::allocateMultiMemory(std::vector<int> size, int identifiant, std::vector<int> values)
+{
+    /** TODO gestion erreur **/
+    std::vector<int> res();
+    for (int i = 0; i < values.size(); i++)
+    {
+        int taille = size.at(i);
+        int val = values.at(i);
+        auto pos = allocateMemory(taille, identifiant, val);
+        res().push_back(pos);
+    }
+    return res;
+}

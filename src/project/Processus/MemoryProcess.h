@@ -28,9 +28,13 @@ public :
      * Cette fonction doit retourner la valeur de la variable
      *
      **/
-
+    std::vector<int> allocateMultiMemory(std::vector<int> size, int identifiant, std::vector<int> values);
     bool modifyMemory(int position,int id, int new_value);
+
+
     void freeVariable(int position, int identifiant);
+    void freeMutlipleVariable(std::vector<int> vect_position, int identifiant);
+
     int getValue(int position) { return std::get<1>(myMemory.at(position)); }
 
     /** Fonction Annexe **/
