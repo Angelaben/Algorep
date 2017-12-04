@@ -14,15 +14,15 @@ int main(void) {
     MemoryProcess memory;
     MemoryProcess memory_id(5);
     LOG("TestMemoryProcess", "Test of Constructor")
-    std::cout << "First ID expected -1, got : "<< memory.getId() << std::endl;
-    std::cout << "Second ID expected 5, got : "<< memory_id.getId() << std::endl;
+    std::cout << "First ID expected -1, got : " << memory.getId() << std::endl;
+    std::cout << "Second ID expected 5, got : " << memory_id.getId() << std::endl;
     LOG(NAME, "Test of allocate and print memory")
     LOG(NAME, "Expected 0 0 0 0 0")
-    auto res =  memory.allocateMemory(5, 0, 0);
+    auto res = memory.allocateMemory(5, 0, 0);
     memory.printMemory();
     std::cout << "Position attendu 0, position obtenu " << res << std::endl;
     LOG(NAME, "Expected 0 0 0 0 0 42 42")
-    res =  memory.allocateMemory(2, 0, 42);
+    res = memory.allocateMemory(2, 0, 42);
     memory.printMemory();
     std::cout << "Position attendu 5 (fin du précédent), position obtenu " << res << std::endl;
     LOG(NAME, " Test GetValue ")
@@ -40,12 +40,19 @@ int main(void) {
     std::cout << "Got : " << memory.getCurrentSize() << std::endl;
 
     LOG(NAME, " Test Free Variable, expected array of 42 ");
-    res =  memory.allocateMemory(5, 0, 0);
-    res =  memory.allocateMemory(2, 0, 42);
+    res = memory.allocateMemory(5, 0, 0);
+    res = memory.allocateMemory(2, 0, 42);
     memory.freeVariable(0, 0);
     memory.printMemory();
     LOG(NAME, " Test Free Variable, expected array of 42 then 5 of value 0");
-    res =  memory.allocateMemory(5, 0, 0);
+    res = memory.allocateMemory(5, 0, 0);
     memory.freeVariable(0, 2);
     memory.printMemory();
+    LOG(NAME, " Test Modify variables : Expected 25 25 0 0 0 0 0")
+    res = memory.modifyMemory(0, 0, 25);
+    memory.printMemory();
+    std::cout << "Got " << res << " expected True" << std::endl;
+
+    LOG(NAME, " Test Modify variables  invalid position, expect error")
+    res = memory.modifyMemory(30, 0, 42);
 }

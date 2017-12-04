@@ -38,3 +38,28 @@ void MemoryProcess::freeVariable(int position, int identifiants)
             return;
     }
 }
+
+bool MemoryProcess::modifyMemory(int position, int id, int new_value)
+{
+
+    if (position >= myMemory.size())
+    {
+        LOG("MemoryProcessError", "Can't modify variables, position out of bound");
+        return false;
+    }
+    int value_to_clear = std::get<1>(myMemory.at(position));
+    int current_position = position;
+    bool modified = false;
+    while(true)
+    {
+        int val = std::get<1>(myMemory.at(current_position));
+        if (val == value_to_clear)
+        {
+            myMemory.at(current_position) = std::make_tuple(id, new_value);
+            modified = true;
+        }
+        else
+            return modified;
+        current_position++;
+    }
+}
