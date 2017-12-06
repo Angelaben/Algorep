@@ -23,12 +23,12 @@ public :
        accéder depuis n’importe quel processus.
        TODO : Gerer le cas ou on deborde de la mémoire dispo, a donner a un frere
     **/
-    int allocateMemory(int size, int identifiant, int value);
+    int allocateMemory(int identifiant, int value);
     /** Permet de demander la lecture d’une variable.
      * Cette fonction doit retourner la valeur de la variable
      *
      **/
-    std::vector<int> allocateMultiMemory(std::vector<int> size, int identifiant, std::vector<int> values);
+    std::vector<int> allocateMultiMemory(int identifiant, std::vector<int> values);
     bool modifyMemory(int position,int id, int new_value);
 
 
@@ -41,14 +41,22 @@ public :
     void printMemory();
     int getMaxSize() { return max_size;}
     std::vector<std::tuple<int, int>> getVector() { return myMemory;}
+
     int getId() { return id; }
-    int getCurrentSize() { return myMemory.size();}
+    int getCurrentSize() ;
 
 private:
     /** Vecteur de (IndexProcessus, Variable)  **/
     std::vector<std::tuple<int, int>> myMemory = std::vector<std::tuple<int, int>>();
+     // Marquer les positions free
+    std::vector<bool> freeArray = std::vector<bool>();
     int id = -1;
     int max_size = 0;
+    /** Vue qu'on supprime et ajoute, on aura des décalages dans les positions renvoyés précédemment par allocate et free
+     * pour l'instant les variables ne sont pas free mais juste marqué free, pas de libération de mémoire
+     * Idée pour améliorer : Parcourir le tableau de free, et a partir du dernier element non free, on efface. On ne peut pas
+     * supprimer ceux d'avant car les positions relatives sont encores utiles
+     * Idée 2 : trouver un moyen de modifier les positions en supprimant la mémoire **/
 };
 
 
