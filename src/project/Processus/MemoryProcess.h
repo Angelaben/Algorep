@@ -5,8 +5,7 @@
 #ifndef ALGOREP_MEMORYPROCESS_H
 #define ALGOREP_MEMORYPROCESS_H
 
-#include<vector>
-#include<tuple>
+
 #include "macros.h"
 class MemoryProcess {
 public :
@@ -29,19 +28,24 @@ public :
      *
      **/
     std::vector<int> allocateMultiMemory(int identifiant, std::vector<int> values);
+    /** Remplacer la variable a la position P par la nouvelle value
+     * TODO : Pas de gestion d'erreur pour l'instant
+     * @param position
+     * @param id
+     * @param new_value
+     */
     bool modifyMemory(int position,int id, int new_value);
 
-
+    /** Explicite **/
     void freeVariable(int position, int identifiant);
     void freeMutlipleVariable(std::vector<int> vect_position, int identifiant);
-
     int getValue(int position) { return std::get<1>(myMemory.at(position)); }
 
     /** Fonction Annexe **/
     void printMemory();
     int getMaxSize() { return max_size;}
     std::vector<std::tuple<int, int>> getVector() { return myMemory;}
-
+    int getAvailableMemory() { return max_size - getCurrentSize(); }
     int getId() { return id; }
     int getCurrentSize() ;
 
@@ -52,13 +56,7 @@ private:
     std::vector<bool> freeArray = std::vector<bool>();
     int id = -1;
     int max_size = 0;
-    /** Vue qu'on supprime et ajoute, on aura des décalages dans les positions renvoyés précédemment par allocate et free
-     * pour l'instant les variables ne sont pas free mais juste marqué free, pas de libération de mémoire
-     * Idée pour améliorer : Parcourir le tableau de free, et a partir du dernier element non free, on efface. On ne peut pas
-     * supprimer ceux d'avant car les positions relatives sont encores utiles
-     * Idée 2 : trouver un moyen de modifier les positions en supprimant la mémoire
-     * Idée 3 : se servir de freeArray pour renvoyer les positions et allocate
-     * **/
+
 };
 
 
