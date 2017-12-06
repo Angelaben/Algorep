@@ -6,22 +6,33 @@
 #define NAME "MemoryProcess"
 int MemoryProcess::allocateMemory(int identifiant, int value)
 {
-    int current_position = myMemory.size();
+    bool found = false;
     /** TODO rajouter la gestion de la taille max d'un processus **/
+    int position = 0;
+    for (bool freedom : freeArray)
+    {
+      if (freedom){ /* Si un espace memoire est dispo */
 
+          myMemory.at(position) = std::make_tuple(identifiant,value);
+          freeArray.at(position) = false;  /* Marque la case comme prise et occupée */
+          return position;
+      }
+        position ++;
+    }
+    /** Si pas de memoire dispo, allouer  TODO gerer taille max **/
     myMemory.push_back(std::make_tuple(identifiant, value));
     freeArray.push_back(false);
-    return current_position;
+    return position ;
 }
 
 void MemoryProcess::printMemory() {
     int pos = 0;
     for (auto value : myMemory) {
-        if (!freeArray.at(pos)) {
+        if (!freeArray[pos]) {
             std::cout << "Identifiant " << std::get<0>(value)
                       << " valeur " << std::get<1>(value) << std::endl;
         }
-        pos ++;
+        pos++;
     }
 }
 
@@ -54,7 +65,7 @@ bool MemoryProcess::modifyMemory(int position, int id, int new_value)
         myMemory.at(current_position) = std::make_tuple(id, new_value);
         modified = true;
     }
-    return true;
+    return modified;
 }
 
 void MemoryProcess::freeMutlipleVariable(std::vector<int> vect_position, int identifiant)

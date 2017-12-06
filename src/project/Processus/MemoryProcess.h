@@ -16,7 +16,7 @@ public :
     MemoryProcess(int own_id, int max) { id = own_id; max_size = max; }
     /** Mandatory **/
     /** Vide la memoire du processus **/
-    void freeMemory() { myMemory.clear(); }
+    void freeMemory() { myMemory.clear(); freeArray.clear();}
     /**
      * Permet de demander l’allocation d’une variable.
      * Cette fonction doit retourner un identifiant permettant d’y
@@ -46,9 +46,9 @@ public :
     int getCurrentSize() ;
 
 private:
-    /** Vecteur de (IndexProcessus, Variable)  **/
+    /** Vecteur de (IndexProcessus, Variable) **/
     std::vector<std::tuple<int, int>> myMemory = std::vector<std::tuple<int, int>>();
-     // Marquer les positions free
+     // Marquer les positions free, True si free, False si non free
     std::vector<bool> freeArray = std::vector<bool>();
     int id = -1;
     int max_size = 0;
@@ -56,7 +56,9 @@ private:
      * pour l'instant les variables ne sont pas free mais juste marqué free, pas de libération de mémoire
      * Idée pour améliorer : Parcourir le tableau de free, et a partir du dernier element non free, on efface. On ne peut pas
      * supprimer ceux d'avant car les positions relatives sont encores utiles
-     * Idée 2 : trouver un moyen de modifier les positions en supprimant la mémoire **/
+     * Idée 2 : trouver un moyen de modifier les positions en supprimant la mémoire
+     * Idée 3 : se servir de freeArray pour renvoyer les positions et allocate
+     * **/
 };
 
 
