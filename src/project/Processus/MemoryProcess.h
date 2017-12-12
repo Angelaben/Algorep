@@ -22,12 +22,14 @@ public :
        accéder depuis n’importe quel processus.
        TODO : Gerer le cas ou on deborde de la mémoire dispo, a donner a un frere
     **/
-    int allocateMemory(int identifiant, int value);
+
+    /** Renvoie un identifiant tuple sous forme <Id Possesseur, Position dans le vecteur > **/
+    std::tuple<int, int> allocateMemory(int identifiant, int value);
     /** Permet de demander la lecture d’une variable.
      * Cette fonction doit retourner la valeur de la variable
      *
      **/
-    std::vector<int> allocateMultiMemory(int identifiant, std::vector<int> values);
+    std::vector<std::tuple<int,int>> allocateMultiMemory(int identifiant, std::vector<int> values);
     /** Remplacer la variable a la position P par la nouvelle value
      * TODO : Pas de gestion d'erreur pour l'instant
      * @param position

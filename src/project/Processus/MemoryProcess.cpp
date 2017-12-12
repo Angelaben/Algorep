@@ -4,7 +4,7 @@
 
 #include "MemoryProcess.h"
 #define NAME "MemoryProcess"
-int MemoryProcess::allocateMemory(int identifiant, int value)
+std::tuple<int, int> MemoryProcess::allocateMemory(int identifiant, int value)
 {
     bool found = false;
     /** TODO rajouter la gestion de la taille max d'un processus **/
@@ -15,14 +15,14 @@ int MemoryProcess::allocateMemory(int identifiant, int value)
 
           myMemory.at(position) = std::make_tuple(identifiant,value);
           freeArray.at(position) = false;  /* Marque la case comme prise et occupée */
-          return position;
+          return std::make_tuple(id, position);
       }
         position ++;
     }
     /** Si pas de memoire dispo, allouer  TODO gerer taille max **/
     myMemory.push_back(std::make_tuple(identifiant, value));
     freeArray.push_back(false);
-    return position ;
+    return std::make_tuple(id, position) ;
 }
 
 void MemoryProcess::printMemory() {
@@ -39,6 +39,7 @@ void MemoryProcess::printMemory() {
 void MemoryProcess::freeVariable(int position, int identifiants)
 {
 
+     /** TODO gerer si l'identifiant n'est pas le sien, rnenvoyer au bon **/
     if (freeArray.at(position))
     {
         LOG(NAME, "Invalid access : already freed memory")
@@ -78,10 +79,10 @@ void MemoryProcess::freeMutlipleVariable(std::vector<int> vect_position, int ide
     }
 }
 
-std::vector<int> MemoryProcess::allocateMultiMemory(int identifiant, std::vector<int> values)
+std::vector<std::tuple<int,int>>  MemoryProcess::allocateMultiMemory(int identifiant, std::vector<int> values)
 {
     /** TODO gestion erreur **/
-    std::vector<int> res = std::vector<int>();
+    std::vector<std::tuple<int , int>> res = std::vector<std::tuple<int, int>>();
     for (int i = 0; i < values.size(); i++)
     {
         int val = values.at(i);
