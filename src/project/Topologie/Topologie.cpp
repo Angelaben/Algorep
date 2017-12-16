@@ -21,7 +21,7 @@ void Topologies_ring(int argc , char* argv[],int nb_membre_anneau, int nb_head)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank) ;
     MPI_Comm_size (MPI_COMM_WORLD, &size) ;
     MPI_Get_library_version ( version , &len) ;
-
+    bool is_a_Master = rank % nb_head == 0; /* Tous les nb_head processus sont des têtes, 0 5 10 ...**/
     /* Nombre de fils par processus */
     int nb_process_per_head = (nb_membre_anneau) / nb_head;
     // Get the rank and size in the original communicator
@@ -33,16 +33,23 @@ void Topologies_ring(int argc , char* argv[],int nb_membre_anneau, int nb_head)
     MPI_Comm_rank(row_comm, &row_rank);
     MPI_Comm_size(row_comm, &row_size);
 
-    printf("WORLD RANK/SIZE: %d \t ROW RANK/SIZE: %d/%d\n",
-           rank, row_rank, row_size);
+    /* printf("WORLD RANK/SIZE: %d \t ROW RANK/SIZE: %d/%d\n",
+           rank, row_rank, row_size); */ //Debug
 
-    if (row_rank == 0)
-    {
-        // Master
-    }
-    else
+    if (row_rank > 0)
     {
         // Child
+        MPI_Send(&rank, 1, MPI_INT, 0, 0, row_comm);
+    }
+    else
+    { /* Master attend que ses fils le ping **/
+        for (int i = 1; i < row_size; i++)
+        {
+            int rank_son = 0;
+            MPI_Recv(&rank_son, 1, MPI_INT, i, 0, row_comm, MPI_STATUS_IGNORE);
+            std::cout << " Rank " << rank << " received son " << rank_son << std::endl;
+            /** AJouter au noeud tête le rank de son  fils **/
+        }
     }
 
 }
@@ -50,7 +57,7 @@ void Topologies_ring(int argc , char* argv[],int nb_membre_anneau, int nb_head)
 int main (int argc , char* argv[])
 {
 
-    int nb_membre_anneau = 10;
+    int nb_membre_anneau = 20;
     int nb_head = 5;
     Topologies_ring(argc, argv, nb_membre_anneau, nb_head);
     MPI_Finalize() ;
