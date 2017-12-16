@@ -92,6 +92,7 @@ std::vector<std::tuple<int,int>>  MemoryProcess::allocateMultiMemory(int identif
     return res;
 }
 
+/** Parcours les elements de son vecteur, a chaque espace non libre incrementel a size a renvoyé **/
 int MemoryProcess::getCurrentSize() {
     int size = 0;
     for (auto val : freeArray)

@@ -20,14 +20,14 @@ int main(void) {
     std::cout << " ============================= " << std::endl;
     LOG(NAME, "Test of allocate and print memory")
     LOG(NAME, "Expected id : 0, value : 0")
-    auto res = memory.allocateMemory(0, 0);
+    auto res = memory.allocateMemory(0, 0); // <Id, Position>
     memory.printMemory();
-    std::cout << "Position attendu 0, position obtenu " << res << std::endl;
+    std::cout << "Position attendu 0, position obtenu " << std::get<1>(res) << std::endl;
     std::cout << " ============================= " << std::endl;
     LOG(NAME, "Expected 0 42")
     res = memory.allocateMemory(0, 42);
     memory.printMemory();
-    std::cout << "Position attendu 1 (fin du précédent), position obtenu " << res << std::endl;
+    std::cout << "Position attendu 1 (fin du précédent), position obtenu " <<  std::get<1>(res) << std::endl;
     std::cout << " ============================= " << std::endl;
 
     LOG(NAME, " Test GetValue ")
@@ -63,13 +63,13 @@ int main(void) {
     res = memory.allocateMemory(0, 0);
     res = memory.allocateMemory(0, 2);
     res = memory.allocateMemory(0, 3);
-    res = memory.modifyMemory(0, 0, 25);
+    bool modified = memory.modifyMemory(0, 0, 25);
     memory.printMemory();
-    std::cout << "Got " << res << " expected True" << std::endl;
+    std::cout << "Got " << modified << " expected True" << std::endl;
     std::cout << " ============================= " << std::endl;
 
     LOG(NAME, " Test Modify variables  invalid position, expect error")
-    res = memory.modifyMemory(30, 0, 42);
+    modified = memory.modifyMemory(30, 0, 42);
     LOG(NAME, " Test freeMultipleVariable and allocateMultipleVariable")
     MemoryProcess memory_b;
     std::vector<int> value = {3, 10, 20};
@@ -77,11 +77,6 @@ int main(void) {
     LOG(NAME, " Expected result : 3 10 20")
     memory_b.printMemory();
     std::cout << " ============================= " << std::endl;
-
-    LOG(NAME, " Expected result : empty")
-    memory_b.freeMutlipleVariable(vect_position, 0);
-    std::cout << " Size of vector " << memory_b.getCurrentSize() << std::endl;
-
 
 
 
