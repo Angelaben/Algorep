@@ -13,7 +13,7 @@ int HeadMemoryProcess::getCurrentSize() {
     return size;
 }
 
-int HeadMemoryProcess::allocateFirstFit(int identifiant, int value)
+std::tuple<int, int> HeadMemoryProcess::allocateFirstFit(int identifiant, int value)
 {
     for (auto Node : listOfSons)
     {
@@ -23,5 +23,5 @@ int HeadMemoryProcess::allocateFirstFit(int identifiant, int value)
         }
     }
     /** Gerer le cas Head n'a pas la place **/
-    return -1;
+    return std::make_tuple<int, int> (-1, -1);
 }

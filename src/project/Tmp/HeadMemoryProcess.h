@@ -4,16 +4,16 @@
 
 #ifndef ALGOREP_HEADMEMORYPROCESS_H
 #define ALGOREP_HEADMEMORYPROCESS_H
-#include "MemoryProcess.h
+#include "MemoryProcess.h"
 
 
 
 class HeadMemoryProcess : public MemoryProcess {
 private :
     int getCurrentSize();
-    int allocateFirstFit(int identifiant, int value);
+    std::tuple<int, int> allocateFirstFit(int identifiant, int value);
 private :
-    std::vector<MemoryProcess> listOfSons = new std::vector<MemoryProcess> ();
+    std::vector<MemoryProcess> listOfSons =  std::vector<MemoryProcess>();
 };
 
 
