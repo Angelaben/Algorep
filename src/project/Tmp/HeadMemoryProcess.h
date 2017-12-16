@@ -9,11 +9,15 @@
 
 
 class HeadMemoryProcess : public MemoryProcess {
-private :
+public:
+    HeadMemoryProcess(int i) { rank = i;}
+    HeadMemoryProcess() { rank = -1;}
     int getCurrentSize();
+    void giveMe_A_Child(MemoryProcess fils) { listOfSons.push_back(fils);}
     std::tuple<int, int> allocateFirstFit(int identifiant, int value);
 private :
     std::vector<MemoryProcess> listOfSons =  std::vector<MemoryProcess>();
+    int rank;
 };
 
 
