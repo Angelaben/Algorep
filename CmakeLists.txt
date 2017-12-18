@@ -18,7 +18,7 @@ include_directories("src/project/Tmp")
 
 # add the executable
 add_executable(Algorep src/project/firstExperiment.cpp)
-add_executable(TestMemoryProcess Test/TestMemoryProcess.cpp src/project/Processus/MemoryProcess.cpp)
+add_executable(PrToT Test/TestMemoryProcess.cpp src/project/Processus/MemoryProcess.cpp)
 add_executable(topologi src/project/Topologie/Topologie.cpp src/project/Tmp/HeadMemoryProcess.cpp src/project/Processus/MemoryProcess.cpp)
 
 add_executable(tree_test src/project/main.cpp src/project/topologie.cpp)
