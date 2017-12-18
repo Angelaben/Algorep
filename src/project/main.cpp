@@ -15,9 +15,6 @@ int main(int argc, char** argv)
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Get_library_version(version, &len);
 
-
-	rank = 0;
-
 	Node *node = (rank == 0) ? (Node *)(new MasterNode(rank)) : (Node *)(new ChildNode(rank));
 	node->run();
 
