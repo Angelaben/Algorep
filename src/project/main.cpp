@@ -5,17 +5,6 @@
 
 int main(int argc, char** argv)
 {
-
-	// int elements_bis[5] = {1, 2, 3, 4, 5};
-	// int *elements = elements_bis;
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	std::cout << elements[i] << ' ';
-	// }
-	// std::cout << std::endl;
-	// return 0;
-
-
 	// MPI initialisations
 	
 	int rank, size, len;
