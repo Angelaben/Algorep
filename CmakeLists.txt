@@ -21,7 +21,7 @@ add_executable(Algorep src/project/firstExperiment.cpp)
 add_executable(TestMemoryProcess Test/TestMemoryProcess.cpp src/project/Processus/MemoryProcess.cpp)
 add_executable(topologi src/project/Topologie/Topologie.cpp src/project/Tmp/HeadMemoryProcess.cpp src/project/Processus/MemoryProcess.cpp)
 
-add_executable(tree_test src/project/main.cpp src/project/topologie.cpp)
+add_executable(tree_test src/project/main.cpp src/project/main.cpp src/project/node.cpp src/project/child_node.cpp src/project/master_node.cpp src/project/external_node.cpp)
 
 target_link_libraries(topologi ${MPI_LIBRARIES})
 target_link_libraries(tree_test ${MPI_LIBRARIES})

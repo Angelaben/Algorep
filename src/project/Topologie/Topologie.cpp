@@ -53,7 +53,7 @@ void Topologies_ring(int argc , char* argv[],int nb_membre_anneau, int nb_head)
     }
     /** Make anneau **/
 
-    if(rank == 0) // Lead
+    if (rank == 0) // Lead
     {
         std::cout << "=======================================≠≠" << std::endl;
         std::cout << " Rank " << rank << " Send his data to " << rank + nb_head << std::endl;
@@ -62,7 +62,7 @@ void Topologies_ring(int argc , char* argv[],int nb_membre_anneau, int nb_head)
         std::cout << " Rank "<< rank << " Receive his data from " << rank - nb_head << std::endl;
         MPI_Recv(&rank_pred, 1, MPI_INT, nb_membre_anneau - nb_head, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
-    else if(is_a_Master)
+    else if (is_a_Master)
     {
         int rank_pred = 0;
         std::cout << " Rank "<< rank << " Receive his data from " << rank - nb_head << std::endl;
