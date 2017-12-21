@@ -16,7 +16,6 @@ int main(int argc, char** argv)
 
 	char version[MPI_MAX_LIBRARY_VERSION_STRING];
 	MPI_Init(&argc, &argv);
-    std::cout << "[USAGE]  mpirun -np 5 --hostfile hostfile  Executable N_NODES N_MASTERs "<<std::endl;
     if (argc < 3)
     {
         std::cout << "[ERROR] Invalid parameters, requires N_NODES and N_MASTERS " << std::endl;
@@ -24,10 +23,7 @@ int main(int argc, char** argv)
     }
     int N_NODES = std::atoi(argv[1]);
     int N_MASTERS = std::atoi(argv[2]);
-	for (int i = 0; i < argc; i++)
-	{
-		std::cout << "argv i " << i << " " << argv[i] << std::endl;
-	}
+
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Get_library_version(version, &len);
@@ -42,4 +38,5 @@ int main(int argc, char** argv)
 	MPI_Finalize();
 
 	delete node;
+    return 0;
 }

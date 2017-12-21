@@ -23,19 +23,20 @@ void ExternalNode::run()
 	//auto ptr4 = this->malloc_rep(data2, 4);
 	//std::cout << "[extern " << this->_rank << "] \t" << "malloc res: (" << std::get<0>(ptr4) << ", " << std::get<1>(ptr4) << ")" << std::endl;
 
-
+	std::cout << " Lecture du tableau envoye " << std::endl;
 	for (int i = 0; i < 10; i++) {
 		int toto = this->read_rep(ptr, i);
 		std::cout << "readed: " << toto << std::endl;
 	}
-
+	std::cout << " Lecture du tableau modifie en 0 et 4 " << std::endl;
 	this->rewrite_rep(ptr, 0, 32);
+	this->rewrite_rep(ptr, 4, 64);
 	for (int i = 0; i < 10; i++) {
 		int toto = this->read_rep(ptr, i);
 		std::cout << "readed: " << toto << std::endl;
 	}
 
-	this->free_rep(ptr);
+/*	this->free_rep(ptr);
 	auto ptr2 = this->malloc_rep(data3, 10);
 	std::cout << "[extern " << this->_rank << "] \t" << "malloc res: (" << std::get<0>(ptr2) << ", " << std::get<1>(ptr2) << ")" << std::endl;
 
@@ -46,8 +47,8 @@ void ExternalNode::run()
 
 	this->free_rep(ptr2);
 
-	auto ptr3 = this->malloc_rep(data3, 10);
-	std::cout << "[extern " << this->_rank << "] \t" << "malloc res: (" << std::get<0>(ptr3) << ", " << std::get<1>(ptr3) << ")" << std::endl;
+	auto ptr3 = this->malloc_rep(data3, 10);*/
+	//std::cout << "[extern " << this->_rank << "] \t" << "malloc res: (" << std::get<0>(ptr3) << ", " << std::get<1>(ptr3) << ")" << std::endl;
 }
 
 std::tuple<int, int> ExternalNode::malloc_rep(int *values, int length)
