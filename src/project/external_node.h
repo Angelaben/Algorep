@@ -21,8 +21,9 @@ public:
 
 	std::tuple<int, int> malloc_rep(int *values, int length);
 	void free_rep(std::tuple<int, int> ptr);
-	void read_rep(std::tuple<int, int> ptr);
-	void read_rep(std::tuple<int, int> ptr, int position);
+	void rewrite_rep(std::tuple<int, int> ptr, int position, int value);
+	int read_rep(std::tuple<int, int> ptr);
+	int read_rep(std::tuple<int, int> ptr, int position);
 
 private:
 	int _total_nodes;

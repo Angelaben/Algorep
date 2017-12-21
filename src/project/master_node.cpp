@@ -53,8 +53,6 @@ bool MasterNode::are_children_busy()
 
 void MasterNode::run()
 {
-	std::cout << "[master " << this->_rank << "] \t" << "start running" << std::endl;
-
 	for (;;)
 	{
 		MPI_Status status;
@@ -66,13 +64,14 @@ void MasterNode::run()
 		int tag 		= status.MPI_TAG;
 		int data_length;
 
-		// std::cout << "node " << source << " -> node " << this->_rank << std::endl;
 		MPI_Get_count(&status, MPI_CHAR, &data_length);
 
 		// if the source is another master or a external node
 		if (source == (this->_rank - (this->_n_children + 1)) + (this->_rank == 0 ? this->_total_nodes : 0) || source >= this->_total_nodes) 
 		{
-			char 	*data 				= 	(char *)malloc(sizeof(char) * data_length + sizeof(int));
+
+			char 	*data 				= 	(char *)malloc(sizeof(char) * data_length);
+
 			MPI_Recv(data, data_length, MPI_CHAR, source, tag, MPI_COMM_WORLD, &status);
 
 			msg_t 	*message		 	=	(msg_t *)data;
@@ -101,8 +100,10 @@ void MasterNode::run()
 					MPI_Send(data, data_length, MPI_CHAR, (this->_rank + this->_n_children + 1) % this->_total_nodes, Tag(DONE), MPI_COMM_WORLD);
 				}
 			}
+			if (tag == Tag(FREE))	{	this->free_memory_demand(source, data_length, data, numbers_length, numbers, message);	}
 			if (tag == Tag(READ)) 	{ 	this->read_memory_demand(source, data_length, data, numbers_length, numbers, message);	}				
 			if (tag == Tag(ALLOC))	{	this->allocate_memory_demand(source, data_length, data, numbers_length, numbers, message);	}
+			if (tag == Tag(WRITE))	{	this->rewrite_memory_demand(source, data_length, data, numbers_length, numbers, message);	}
 
 			free(data);
 		}
@@ -116,6 +117,7 @@ void MasterNode::run()
 
 			if (tag == Tag(READ)) 	{ 	this->read_memory_result(source, numbers_length, numbers); }
 			if (tag == Tag(ALLOC))	{ 	this->allocate_memory_result(source, numbers_length, numbers); }
+			if (tag == Tag(WRITE)) 	{ 	this->rewrite_memory_result(source, numbers_length, numbers); }
 
 			free(data);
 		}
@@ -123,29 +125,156 @@ void MasterNode::run()
 	}
 }
 
+void MasterNode::free_memory_demand(int source, int data_length, char *data, int numbers_length, int* numbers, msg_t* message)
+{
+	if (message->master_dest == this->_rank)	// if reading demand concern this master node
+	{
+		// Send reading request to the child
+
+		if (message->element_idx >= this->_children_allocations_table.at(message->id)->size())
+		{
+			MPI_Send(data, data_length, MPI_CHAR, (this->_rank + this->_n_children + 1) % this->_total_nodes, Tag(DONE), MPI_COMM_WORLD);
+		}
+		else
+		{
+			for (int i = 0; i < this->_children_allocations_table.at(message->id)->size(); i++)
+			{
+				int child_rank 		=	std::get<0>(this->_children_allocations_table.at(message->id)->at(i));
+				int position		=	std::get<1>(this->_children_allocations_table.at(message->id)->at(i));
+
+				MPI_Send(&position, 1, MPI_INT, child_rank, Tag(FREE), MPI_COMM_WORLD);
+				this->_children_available_space[child_rank - this->_rank] -= 1;
+			}
+			this->_children_allocations_table.erase(this->_children_allocations_table.begin() + message->id);
+		}
+	}
+	else 	// else we send the message to the neighboor
+	{
+		MPI_Send(data, data_length, MPI_CHAR, (this->_rank + this->_n_children + 1) % this->_total_nodes, Tag(READ), MPI_COMM_WORLD);
+	}
+}
+
+
 
 void MasterNode::read_memory_demand(int source, int data_length, char *data, int numbers_length, int* numbers, msg_t* message)
 {
 	if (message->master_dest == this->_rank)	// if reading demand concern this master node
 	{
 		// Send reading request to the child
-		int child_index 	=	std::get<0>(this->_children_allocations_table.at(message->id)->at(message->element_idx));
-		int position		=	std::get<1>(this->_children_allocations_table.at(message->id)->at(message->element_idx));
 
-		MPI_Send(&position, 1, MPI_INT, this->_rank + child_index, 1, MPI_COMM_WORLD);
+		if (message->element_idx >= this->_children_allocations_table.at(message->id)->size())
+		{
+			MPI_Send(data, data_length, MPI_CHAR, (this->_rank + this->_n_children + 1) % this->_total_nodes, Tag(DONE), MPI_COMM_WORLD);
+		}
+		else
+		{
+			int child_rank 		=	std::get<0>(this->_children_allocations_table.at(message->id)->at(message->element_idx));
+			int position		=	std::get<1>(this->_children_allocations_table.at(message->id)->at(message->element_idx));
+			
+			int request_id		=	this->get_unique_id();
+			reqsaf_t *request 	= 	(reqsaf_t *)malloc(sizeof(reqsaf_t));
+			request->id 		=	request_id;
+			request->message 	=	*message;
+
+			numbers[0]			=	position;
+			numbers[1]			=	request_id;
+
+			this->_current_requests.push_back(request);
+			MPI_Send(numbers, numbers_length + 1, MPI_INT, child_rank, Tag(READ), MPI_COMM_WORLD);
+		}
 	}
 	else 	// else we send the message to the neighboor
 	{
-		MPI_Send(data, data_length, MPI_CHAR, (this->_rank + this->_n_children + 1) % this->_total_nodes, 1, MPI_COMM_WORLD);
+		MPI_Send(data, data_length, MPI_CHAR, (this->_rank + this->_n_children + 1) % this->_total_nodes, Tag(READ), MPI_COMM_WORLD);
+	}
+}
+
+void MasterNode::rewrite_memory_demand(int source, int data_length, char *data, int numbers_length, int* numbers, msg_t* message)
+{
+	if (message->master_dest == this->_rank)	// if reading demand concern this master node
+	{
+		// Send reading request to the child
+
+		if (message->element_idx >= this->_children_allocations_table.at(message->id)->size())
+		{
+			MPI_Send(data, data_length, MPI_CHAR, (this->_rank + this->_n_children + 1) % this->_total_nodes, Tag(DONE), MPI_COMM_WORLD);
+		}
+		else
+		{
+			int child_rank 		=	std::get<0>(this->_children_allocations_table.at(message->id)->at(message->element_idx));
+			int position		=	std::get<1>(this->_children_allocations_table.at(message->id)->at(message->element_idx));
+			
+			int request_id		=	this->get_unique_id();
+			reqsaf_t *request 	= 	(reqsaf_t *)malloc(sizeof(reqsaf_t));
+			request->id 		=	request_id;
+			request->message 	=	*message;
+
+			numbers[1]			=	position;
+			numbers[2]			=	request_id;
+
+			this->_current_requests.push_back(request);
+			MPI_Send(numbers, numbers_length + 1, MPI_INT, child_rank, Tag(WRITE), MPI_COMM_WORLD);
+		}
+	}
+	else 	// else we send the message to the neighboor
+	{
+		MPI_Send(data, data_length, MPI_CHAR, (this->_rank + this->_n_children + 1) % this->_total_nodes, Tag(WRITE), MPI_COMM_WORLD);
+	}
+}
+
+void MasterNode::rewrite_memory_result(int source, int numbers_length, int *numbers)
+{
+	int request_id	=	numbers[2];
+
+	for (int i = 0; i < this->_current_requests.size(); i++)
+	{
+		auto request = this->_current_requests[i];
+
+		if (request->id == request_id)
+		{		
+			char *data 					=	(char *)malloc(sizeof(msg_t));
+			msg_t *message 				=	(msg_t *)data;
+			*message 					=	request->message;
+
+
+			MPI_Send(data, sizeof(msg_t), MPI_CHAR, (this->_rank + this->_n_children + 1) % this->_total_nodes, Tag(DONE), MPI_COMM_WORLD);
+
+			free(data);
+
+			this->_current_requests.erase(this->_current_requests.begin() + i);
+
+			break;
+		}
 	}
 }
 
 
 void MasterNode::read_memory_result(int source, int numbers_length, int *numbers)
 {
+	int result 		=	numbers[0];
+	int request_id	=	numbers[1];
 
+	for (int i = 0; i < this->_current_requests.size(); i++)
+	{
+		auto request = this->_current_requests[i];
+
+		if (request->id == request_id)
+		{		
+			char *data 					=	(char *)malloc(sizeof(msg_t) + 2 * sizeof(int));
+			msg_t *message 				=	(msg_t *)data;
+			*message 					=	request->message;
+			*(data + sizeof(msg_t)) 	=	result;
+
+			MPI_Send(data, sizeof(msg_t) + sizeof(int), MPI_CHAR, (this->_rank + this->_n_children + 1) % this->_total_nodes, Tag(DONE), MPI_COMM_WORLD);
+
+			free(data);
+
+			this->_current_requests.erase(this->_current_requests.begin() + i);
+
+			break;
+		}
+	}
 }
-
 
 void MasterNode::allocate_memory_demand(int source, int data_length, char *data, int numbers_length, int* numbers, msg_t* message)
 {
@@ -274,7 +403,7 @@ void MasterNode::allocate_memory_result(int source, int numbers_length, int *num
 			auto allocation_table = this->_children_allocations_table[request->message.id];
 			for (int i = 0; i < numbers_length - 1; i++)
 			{					
-				allocation_table->at(i) 
+				allocation_table->at(i + begining) 
 					= std::make_tuple<int, int>(std::move(source), std::move(numbers[i]));
 			}
 

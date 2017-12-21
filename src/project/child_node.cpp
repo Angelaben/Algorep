@@ -30,12 +30,17 @@ void ChildNode::run()
     	int request_id 	=	data[data_length - 1];
 		MPI_Recv(data, data_length, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
 
-		if 		(tag == 1)		// Reading a variable
+		if 		(tag == Tag(READ))		// Reading a variable
 		{
 			*data 	=	this->_allocated_elements[*data] ? this->_data[*data] : 0;
 			MPI_Send(data, data_length, MPI_INT, source, tag, MPI_COMM_WORLD);
 		}
-		else if (tag == 2)		// Allocate a variable
+		else if (tag == Tag(WRITE))
+		{
+			this->_data[data[1]] = data[0];
+			MPI_Send(data, data_length, MPI_INT, source, tag, MPI_COMM_WORLD);
+		}
+		else if (tag == Tag(ALLOC))		// Allocate a variable
 		{
 			int i = 0;
 			for (int j = 0; j < CHILD_MEMORY_SIZE && i < data_length - 1; j++)
@@ -52,13 +57,10 @@ void ChildNode::run()
 
 			MPI_Send(data, data_length, MPI_INT, source, tag, MPI_COMM_WORLD);
 		}
-		else if (tag == 3)		// Free space used by variables
+		else if (tag == Tag(FREE))		// Free space used by variables
 		{
-			for (int i = 0; i < data_length - 1; i++)
-			{
-				this->_allocated_elements[*(data + i)]	= false;
-				this->_free_space					   	   += 1;
-			}
+			this->_allocated_elements[*data]	= false;
+			this->_free_space					   	   += 1;
 		}
 
 		free(data);

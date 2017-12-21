@@ -40,9 +40,13 @@ public:
 
 	void 	read_memory_demand(int source, int data_length, char *data, int numbers_length, int* numbers, msg_t* message);
 	void 	allocate_memory_demand(int source, int data_length, char *data, int numbers_length, int* numbers, msg_t* message);
+	void 	rewrite_memory_demand(int source, int data_length, char *data, int numbers_length, int* numbers, msg_t* message);
+	void 	free_memory_demand(int source, int data_length, char *data, int numbers_length, int* numbers, msg_t* message);
+
 
 	void 	read_memory_result(int source, int numbers_length, int *numbers);
 	void	allocate_memory_result(int source, int numbers_length, int *numbers);
+	void	rewrite_memory_result(int source, int numbers_length, int *numbers);
 
 	int 	get_unique_id();
 	bool 	are_children_busy();
