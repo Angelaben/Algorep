@@ -18,7 +18,7 @@ public:
 	ExternalNode(int rank, int total_nodes);
 
 	virtual void run();
-
+	void bubbleSort(int size, std::tuple<int, int> ptr);
 	std::tuple<int, int> malloc_rep(int *values, int length);
 	void free_rep(std::tuple<int, int> ptr);
 	void rewrite_rep(std::tuple<int, int> ptr, int position, int value);
