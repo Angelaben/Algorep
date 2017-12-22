@@ -37,6 +37,6 @@ int main(int argc, char** argv)
 
 	MPI_Finalize();
 
-	delete node;
+	//delete node;
     return 0;
 }

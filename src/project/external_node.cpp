@@ -12,9 +12,9 @@ void ExternalNode::bubbleSort(int size, std::tuple<int, int> ptr)
 {
 		for (int i = 0; i < size - 1; i++)
 		{
-
+        std::cout << " Iteration i " << i << std::endl;
 			for (int j = 0; j <  size - i - 1; j++) {
-            //    std::cout << " Recupere pour i " << i << " et j " << j << " les valeurs de j et j+1 " << j+1 << std::endl;
+                //std::cout << " Recupere pour i " << i << " et j " << j << " les valeurs de j et j+1 " << j+1 << std::endl;
 				int first = this->read_rep(ptr, j);
 				int second = this->read_rep(ptr, j + 1);
 				if (first > second) {
